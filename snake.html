@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Snake!</title>
+
+        <style>
+        
+            .cake {
+                background-color: red;
+                position: absolute;
+                border-radius: 15px;
+            }        
+
+            #apple {
+                background-color: green;
+                position: absolute;
+                border-radius: 15px;
+            }        
+
+            #canvas {
+                background-color: lightblue;
+                margin: auto;
+                position: relative;
+            }
+
+            .button {
+                display: block;
+                float: left;
+            }
+
+            .control {
+                border: 2px solid lightblue;
+                padding: 3px;
+                margin: 30px auto 0px auto;
+                width: 200px;
+                text-align: center;
+            }
+
+        </style>
+
+
+
+       <script type="text/javascript">
+
+            var blockWidth  = 40;
+            var blockHeight = 40;
+            var canvasWidth = 600;
+            var canvasHeight = 600;
+            var initialised = false;
+            var step = blockWidth;
+            var direction = 2;
+            var elements = [];
+            var length = 3;
+            var create = false;
+
+            function moveLeft() {
+                var element = elements[0];
+                p = Math.max(parseInt(element.style.left) - step, 0);
+                element.style.left = p + 'px';
+                console.log('left ' + parseInt(element.style.left));
+            }
+
+            function moveRight() {
+                var element = elements[0];
+                p = Math.min(parseInt(element.style.left) + step, canvasWidth - blockWidth);
+                element.style.left = p + 'px';
+                console.log('right');
+            }
+
+            function moveUp() {
+                var element = elements[0];
+                p = Math.max(parseInt(element.style.top) - step, 0);
+                element.style.top = p + 'px';
+                console.log('up');
+            }
+
+            function moveDown() {
+                var element = elements[0];
+                p = Math.min(parseInt(element.style.top) + step, canvasHeight - blockHeight);
+                element.style.top = p + 'px';
+
+                console.log('down');
+            }
+
+            function moveSelection(event) {                    
+                switch (event.keyCode) {
+                    case 37:
+                        direction = 3;
+                    break;
+
+                    case 39:
+                        direction = 1;
+                    break;
+
+                    case 38:
+                        direction = 0;
+                    break;
+
+                    case 40:
+                        direction = 2;;
+                    break;
+                }
+            };
+
+            function createElement() {
+                var div = document.createElement("div");
+                div.classList.add('cake');
+                if (elements.length == 0) {
+                    div.style.top = 5 *  blockHeight + 'px';
+                } else {
+                    last = elements[elements.length - 1];
+                    div.style.top = parseInt(last.style.top) - blockHeight + 'px';
+                }
+                div.style.left = 5 * blockWidth + 'px';
+
+                div.style.width = blockWidth + 'px';
+                div.style.height = blockHeight + 'px';
+            
+                var canvas = document.getElementById("canvas");
+                canvas.append(div);
+                elements.push(div);
+                return div;
+            }
+
+            function randomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function resetApple() {
+
+                var apple = document.getElementById("apple");
+                maxTop = Math.trunc((canvasHeight - blockHeight) / blockHeight);
+                apple.style.top = randomInt(0, maxTop) * blockHeight + 'px';
+
+                maxLeft = Math.trunc((canvasWidth - blockWidth) / blockWidth);
+                apple.style.left = randomInt(0, maxTop) * blockWidth + 'px';
+
+                console.log(apple.style.left + " " + apple.style.top);
+            }
+
+            function initialise() {
+                for (var i = 0; i < length; i++) {
+                    createElement();
+                }
+                elements[0].style.backgroundColor = 'orange';
+                elements[0].style.zIndex = 2;
+
+                var canvas = document.getElementById("canvas");
+                canvas.style.width = canvasWidth + 'px';
+                canvas.style.height = canvasHeight + 'px';
+                
+                var apple = document.getElementById("apple");
+                apple.style.width = blockWidth + 'px';
+                apple.style.height = blockHeight + 'px';
+                resetApple();
+
+                initialised = true;
+            }
+
+            
+            function isCollision(elementA, elementB) {
+                if (elementA.style.top == elementB.style.top && elementA.style.left == elementB.style.left) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            function isSnakeCollision(element) {
+
+                var collision = false;
+                for (var i = 1; i < elements.length; i++) {
+                    collision = collision || isCollision(elements[i], element);
+                }
+                return collision;
+            }
+                
+
+
+            function onLoop() {
+                
+                var head = elements[0];
+                var apple = document.getElementById("apple");
+                if (head.style.top == apple.style.top && head.style.left == apple.style.left) {
+                    create = true;
+                    resetApple();
+                    while (isSnakeCollision(apple)) {
+                        resetApple();
+                    }
+                }                        
+        
+                
+
+                if (create) {
+                    createElement();
+                    create = false;
+                }
+
+                for (var i = elements.length - 1; i > 0; i--) {
+                    before = elements[i - 1];
+                    after = elements[i];
+                    after.style.top = before.style.top;
+                    after.style.left = before.style.left;
+                }
+
+                switch (direction) {
+                    case 0: 
+                        moveUp(); break;
+                    case 1: 
+                        moveRight(); break;
+                    case 2: 
+                        moveDown(); break;
+                    case 3: 
+                        moveLeft(); break;
+                }
+            }
+
+            function gameLoop() {
+                if (!initialised) {
+                    initialise();
+                }
+
+                onLoop();
+
+                setTimeout("gameLoop()", 100);
+            }
+
+
+      </script>
+
+    </head>
+
+    <body onload="gameLoop();" onkeydown="moveSelection(event)" bgcolor='linen'>
+    
+        <div id="canvas">
+            <div id="apple"></div>
+        </div>
+
+        <div class="control">
+            <button onclick="moveUp()">Up</button>
+            <button onclick="moveDown()">Down</button>
+            <button onclick="moveLeft()">Left</button>
+            <button onclick="moveRight()">Right</button>
+            <button onclick="create = true;">Grow</button>
+        </div>
+    </body>
+</html>
