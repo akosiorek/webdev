@@ -52,31 +52,34 @@
             var elements = [];
             var length = 3;
             var create = false;
+            var running = false;
+            var score = 0;
+
 
             function moveLeft() {
                 var element = elements[0];
-                p = Math.max(parseInt(element.style.left) - step, 0);
+                p = parseInt(element.style.left) - step;
                 element.style.left = p + 'px';
                 console.log('left ' + parseInt(element.style.left));
             }
 
             function moveRight() {
                 var element = elements[0];
-                p = Math.min(parseInt(element.style.left) + step, canvasWidth - blockWidth);
+                p = parseInt(element.style.left) + step;
                 element.style.left = p + 'px';
                 console.log('right');
             }
 
             function moveUp() {
                 var element = elements[0];
-                p = Math.max(parseInt(element.style.top) - step, 0);
+                p = parseInt(element.style.top) - step;
                 element.style.top = p + 'px';
                 console.log('up');
             }
 
             function moveDown() {
                 var element = elements[0];
-                p = Math.min(parseInt(element.style.top) + step, canvasHeight - blockHeight);
+                p = parseInt(element.style.top) + step;
                 element.style.top = p + 'px';
 
                 console.log('down');
@@ -85,19 +88,20 @@
             function moveSelection(event) {                    
                 switch (event.keyCode) {
                     case 37:
-                        direction = 3;
+
+                        if (direction != 1) { direction = 3; }
                     break;
 
                     case 39:
-                        direction = 1;
+                        if (direction != 3) { direction = 1; }
                     break;
 
                     case 38:
-                        direction = 0;
+                        if (direction != 2) { direction = 0; }
                     break;
 
                     case 40:
-                        direction = 2;;
+                        if (direction != 0) { direction = 2; }
                     break;
                 }
             };
@@ -154,6 +158,7 @@
                 apple.style.height = blockHeight + 'px';
                 resetApple();
 
+                running = true;
                 initialised = true;
             }
 
@@ -175,13 +180,20 @@
                 return collision;
             }
                 
-
+            function insideBounds(value, min, max) {
+                pos = parseInt(value);
+                if (pos >= min && pos <= max) {
+                    return true;
+                }
+                return false;
+            }
 
             function onLoop() {
                 
                 var head = elements[0];
                 var apple = document.getElementById("apple");
-                if (head.style.top == apple.style.top && head.style.left == apple.style.left) {
+                if (isCollision(head, apple)) {
+                    score += 1;
                     create = true;
                     resetApple();
                     while (isSnakeCollision(apple)) {
@@ -189,8 +201,6 @@
                     }
                 }                        
         
-                
-
                 if (create) {
                     createElement();
                     create = false;
@@ -213,6 +223,13 @@
                     case 3: 
                         moveLeft(); break;
                 }
+
+                topOK = insideBounds(head.style.top, 0, canvasHeight - blockHeight);
+                leftOK = insideBounds(head.style.left, 0, canvasWidth - blockWidth);
+                if (isSnakeCollision(head) || !topOK || !leftOK) {
+                    running = false;
+                }
+
             }
 
             function gameLoop() {
@@ -221,8 +238,12 @@
                 }
 
                 onLoop();
-
-                setTimeout("gameLoop()", 100);
+                    
+                if (running) {
+                    setTimeout("gameLoop()", 100);
+                } else {
+                    alert('Game Over!\n score = ' + score);
+                }
             }
 
 
