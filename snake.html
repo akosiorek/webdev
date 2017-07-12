@@ -59,6 +59,9 @@
             function moveLeft() {
                 var element = elements[0];
                 p = parseInt(element.style.left) - step;
+                if (p < 0) {
+                    p = canvasWidth - blockWidth;
+                }
                 element.style.left = p + 'px';
                 console.log('left ' + parseInt(element.style.left));
             }
@@ -66,6 +69,9 @@
             function moveRight() {
                 var element = elements[0];
                 p = parseInt(element.style.left) + step;
+                if (p > canvasWidth - blockWidth) {
+                    p = 0;
+                }
                 element.style.left = p + 'px';
                 console.log('right');
             }
@@ -73,6 +79,9 @@
             function moveUp() {
                 var element = elements[0];
                 p = parseInt(element.style.top) - step;
+                if (p < 0) {
+                    p = canvasHeight - blockHeight;
+                }
                 element.style.top = p + 'px';
                 console.log('up');
             }
@@ -80,6 +89,9 @@
             function moveDown() {
                 var element = elements[0];
                 p = parseInt(element.style.top) + step;
+                if (p > canvasHeight - blockHeight) {
+                    p = 0;
+                }
                 element.style.top = p + 'px';
 
                 console.log('down');
