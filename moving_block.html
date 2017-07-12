@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <style>
+        
+            #cake {
+                background-color: red;
+                position: relative;
+                border-radius: 15px;
+            }        
+
+            #canvas {
+                background-color: lightblue;
+                margin: auto;
+            }
+
+            .button {
+                display: block;
+                float: left;
+            }
+
+
+            .control {
+                border: 2px solid lightblue;
+                padding: 3px;
+                margin: 30px auto 0px auto;
+                width: 200px;
+                text-align: center;
+            }
+
+        </style>
+
+
+
+       <script type="text/javascript">
+
+            var blockWidth  = 50;
+            var blockHeight = 50;
+            var canvasWidth = 500;
+            var canvasHeight = 500;
+            var initialised = false;
+            var step = 15;
+
+            function leftArrowPressed() {
+                var element = document.getElementById("cake");
+                p = Math.max(parseInt(element.style.left) - step, 0);
+                element.style.left = p + 'px';
+                console.log('left ' + parseInt(element.style.left));
+            }
+
+            function rightArrowPressed() {
+                var element = document.getElementById("cake");
+                p = Math.min(parseInt(element.style.left) + step, canvasWidth - blockWidth);
+                element.style.left = p + 'px';
+                console.log('right');
+            }
+
+            function upArrowPressed() {
+                var element = document.getElementById("cake");
+                p = Math.max(parseInt(element.style.top) - step, 0);
+                element.style.top = p + 'px';
+                console.log('up');
+            }
+
+            function downArrowPressed() {
+                var element = document.getElementById("cake");
+                p = Math.min(parseInt(element.style.top) + step, canvasHeight - blockHeight);
+                element.style.top = p + 'px';
+                console.log('down');
+            }
+
+            function moveSelection(event) {                    
+                switch (event.keyCode) {
+                    case 37:
+                        leftArrowPressed();
+                    break;
+
+                    case 39:
+                        rightArrowPressed();
+                    break;
+
+                    case 38:
+                        upArrowPressed();
+                    break;
+
+                    case 40:
+                        downArrowPressed();
+                    break;
+                }
+            };
+
+            function initialise() {
+                if (!initialised) {
+                    var cake = document.getElementById("cake");
+                    cake.style.top = '15px';
+                    cake.style.left = '15px';
+                    cake.style.width = blockWidth + 'px';
+                    cake.style.height = blockHeight + 'px';
+                
+                    var canvas = document.getElementById("canvas");
+                    canvas.style.width = canvasWidth + 'px';
+                    canvas.style.height = canvasHeight + 'px';
+ 
+                    initialised = true;
+                }
+                //setTimeout("gameLoop()", 10);
+            }
+
+      </script>
+
+    </head>
+
+     <body onload="initialise();" onkeydown="moveSelection(event)" bgcolor='linen'>
+    
+        <div id="canvas">
+            <div id="cake"></div>
+        </div>
+        <div class="control">
+            <button onclick="upArrowPressed()">Up</button>
+            <button onclick="downArrowPressed()">Down</button>
+            <button onclick="leftArrowPressed()">Left</button>
+            <button onclick="rightArrowPressed()">Right</button>
+        </div>
+    </body>
+</html>
